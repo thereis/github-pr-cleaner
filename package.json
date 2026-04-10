@@ -1,0 +1,34 @@
+{
+  "name": "github-pr-cleaner",
+  "version": "1.0.0",
+  "description": "Automatically hides deployment noise from GitHub pull request timelines",
+  "type": "module",
+  "scripts": {
+    "build": "rolldown -c",
+    "watch": "rolldown -c --watch",
+    "lint": "oxlint src",
+    "lint:fix": "oxlint --fix src",
+    "format": "oxfmt src",
+    "format:check": "oxfmt --check src"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/thereis/github-pr-cleaner.git"
+  },
+  "keywords": [],
+  "author": "Lucas Reis",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/thereis/github-pr-cleaner/issues"
+  },
+  "homepage": "https://github.com/thereis/github-pr-cleaner#readme",
+  "devDependencies": {
+    "@anthropic-ai/claude-code": "^2.1.100",
+    "@types/chrome": "^0.1.40",
+    "loglevel": "^1.9.2",
+    "oxfmt": "^0.44.0",
+    "oxlint": "^1.59.0",
+    "rolldown": "^1.0.0-rc.15",
+    "typescript": "^6.0.2"
+  }
+}

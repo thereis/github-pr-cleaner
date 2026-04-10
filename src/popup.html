@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        width: 260px;
+        padding: 16px;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+        font-size: 14px;
+        color: #c9d1d9;
+        background: #161b22;
+      }
+
+      .header {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 14px;
+      }
+
+      .header span {
+        font-size: 18px;
+      }
+
+      .header h1 {
+        font-size: 14px;
+        font-weight: 600;
+      }
+
+      .section {
+        border-top: 1px solid #30363d;
+        padding-top: 12px;
+        margin-top: 12px;
+      }
+
+      .section:first-of-type {
+        border-top: none;
+        padding-top: 0;
+        margin-top: 0;
+      }
+
+      .row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .status {
+        font-size: 13px;
+        color: #8b949e;
+      }
+
+      .switch {
+        position: relative;
+        width: 40px;
+        height: 22px;
+        flex-shrink: 0;
+      }
+
+      .switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+      }
+
+      .slider {
+        position: absolute;
+        inset: 0;
+        background: #30363d;
+        border-radius: 11px;
+        cursor: pointer;
+        transition: background 0.2s;
+      }
+
+      .slider::before {
+        content: '';
+        position: absolute;
+        width: 16px;
+        height: 16px;
+        left: 3px;
+        bottom: 3px;
+        background: #c9d1d9;
+        border-radius: 50%;
+        transition: transform 0.2s;
+      }
+
+      input:checked + .slider {
+        background: #1f6feb;
+      }
+
+      input:checked + .slider::before {
+        transform: translateX(18px);
+      }
+
+      .user-list {
+        margin-top: 10px;
+        max-height: 200px;
+        overflow-y: auto;
+      }
+
+      .user-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 4px 0;
+        font-size: 13px;
+      }
+
+      .user-row label {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        cursor: pointer;
+        color: #8b949e;
+        flex: 1;
+        min-width: 0;
+      }
+
+      .user-row label input {
+        accent-color: #1f6feb;
+        cursor: pointer;
+      }
+
+      .user-row .username {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .globe-btn {
+        background: none;
+        border: none;
+        cursor: pointer;
+        font-size: 14px;
+        padding: 2px 4px;
+        border-radius: 4px;
+        opacity: 0.4;
+        transition: opacity 0.2s;
+      }
+
+      .globe-btn:hover {
+        opacity: 0.7;
+      }
+
+      .globe-btn.active {
+        opacity: 1;
+      }
+
+      .empty-msg {
+        font-size: 12px;
+        color: #484f58;
+        padding: 8px 0;
+      }
+
+      .reload-banner {
+        display: none;
+        margin-top: 12px;
+        padding: 8px 12px;
+        background: #1c2128;
+        border: 1px solid #f0883e;
+        border-radius: 8px;
+        font-size: 12px;
+        color: #d29922;
+        text-align: center;
+      }
+
+      .reload-banner span {
+        display: block;
+        margin-bottom: 6px;
+      }
+
+      .reload-btn {
+        background: #f0883e;
+        color: #161b22;
+        border: none;
+        border-radius: 6px;
+        padding: 4px 12px;
+        font-size: 12px;
+        font-weight: 600;
+        cursor: pointer;
+      }
+
+      .reload-btn:hover {
+        background: #d29922;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <span>🧹</span>
+      <h1>PR Cleaner</h1>
+    </div>
+
+    <div class="section">
+      <div class="row">
+        <span class="status">Hide deploys: <span id="deploy-status">On</span></span>
+        <label class="switch">
+          <input type="checkbox" id="deploy-toggle" checked />
+          <span class="slider"></span>
+        </label>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="row">
+        <span class="status">Hide comments: <span id="comments-status">Off</span></span>
+        <label class="switch">
+          <input type="checkbox" id="comments-toggle" />
+          <span class="slider"></span>
+        </label>
+      </div>
+      <div id="user-list-container" class="user-list" style="display: none"></div>
+      <div id="reload-banner" class="reload-banner">
+        <span>Reload page to restore hidden comments</span>
+        <button id="reload-btn" class="reload-btn">Reload</button>
+      </div>
+    </div>
+
+    <script src="popup.js"></script>
+  </body>
+</html>
