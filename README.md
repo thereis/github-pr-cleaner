@@ -74,4 +74,4 @@ src/
 
 ## License
 
-ISC
+[ISC](LICENSE)
