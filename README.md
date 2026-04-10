@@ -1,15 +1,16 @@
 # GitHub PR Cleaner
 
-Chrome extension that automatically hides deployment noise from GitHub pull request timelines.
+Chrome extension that cleans up noisy GitHub pull request timelines by hiding deployment items and letting you silence specific users.
 
-## What it does
+## Features
 
-GitHub PR timelines get cluttered with deployment status updates, making it hard to follow the actual conversation. This extension hides those items and shows a small counter chip so you know how many were cleaned up.
-
-- Hides timeline items matching deployment patterns
-- Expands collapsed "hidden items" sections and cleans those too
-- Works with GitHub's SPA navigation (Turbo)
-- Toggle on/off from the extension popup
+- **Hide deploy noise** — automatically hides timeline items matching deployment patterns
+- **Silence users** — hide all timeline activity from specific users (comments, reviews, inline comments)
+- **Per-PR or global** — mute a user on just one PR, or globally across all PRs
+- **Interactive chip** — floating `💬 N 🚫 N` counter on the page; click to see a full breakdown
+- **SPA-aware** — works with GitHub's client-side navigation (Turbo), including navigating from the PR list into a PR
+- **Popup controls** — toggle features on/off, manage silenced users with per-PR and global options
+- **Reload prompt** — when you un-mute a user, the popup offers to reload the page to restore their comments
 
 ## Install
 
@@ -41,18 +42,25 @@ pnpm run format:check   # Check formatting
 - **Rolldown** — bundler
 - **oxlint** — linter
 - **oxfmt** — formatter
+- **loglevel** — logging
 
 ## Project structure
 
 ```
 src/
-  content.ts          Content script injected into GitHub PR pages
-  popup.html          Extension popup UI
-  popup.ts            Popup toggle logic
+  content/
+    index.ts          Content script entry point and orchestration
+    deploy.ts         Deploy item hiding logic
+    comments.ts       User scraping and comment hiding
+    chip.ts           Floating chip with popover
   background/
-    index.ts          Message router
-    cleaner.ts        Deploy hiding state management
+    index.ts          Message router + SPA navigation injection
+    cleaner.ts        Deploy toggle state management
+    comments.ts       Comment hiding state (global + per-PR)
     types.ts          Shared types for message handlers
+  popup.html          Extension popup UI
+  popup.ts            Popup logic (toggles, user list, reload banner)
+  logger.ts           Logging utility
   manifest.json       Chrome extension manifest (v3)
 ```
 

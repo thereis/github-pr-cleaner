@@ -1,0 +1,132 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="UTF-8"/>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    width: 440px;
+    height: 280px;
+    background: linear-gradient(135deg, #0d1117 0%, #161b22 50%, #1c2128 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  }
+
+  .container {
+    display: flex;
+    align-items: center;
+    gap: 32px;
+    padding: 0 36px;
+  }
+
+  .icon-area {
+    flex-shrink: 0;
+  }
+
+  .icon-area svg {
+    width: 80px;
+    height: 80px;
+    filter: drop-shadow(0 4px 12px rgba(31, 111, 235, 0.3));
+  }
+
+  .text-area {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .title {
+    font-size: 22px;
+    font-weight: 700;
+    color: #f0f6fc;
+    letter-spacing: -0.3px;
+  }
+
+  .subtitle {
+    font-size: 13px;
+    color: #8b949e;
+    line-height: 1.5;
+    max-width: 260px;
+  }
+
+  .tags {
+    display: flex;
+    gap: 6px;
+    margin-top: 4px;
+  }
+
+  .tag {
+    font-size: 11px;
+    padding: 2px 10px;
+    border-radius: 12px;
+    font-weight: 500;
+  }
+
+  .tag.blue { background: rgba(31, 111, 235, 0.2); color: #58a6ff; }
+  .tag.green { background: rgba(63, 185, 80, 0.2); color: #3fb950; }
+  .tag.orange { background: rgba(240, 136, 62, 0.2); color: #f0883e; }
+
+  .bg-line {
+    position: absolute;
+    left: 0;
+    width: 3px;
+    background: #30363d;
+  }
+  .bg-line-1 { top: 30px; height: 220px; left: 20px; }
+  .bg-line-2 { top: 50px; height: 180px; left: 32px; opacity: 0.5; }
+
+  .bg-dot {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    left: 17px;
+  }
+  .bg-dot-1 { top: 60px; background: #30363d; }
+  .bg-dot-2 { top: 110px; background: #30363d; opacity: 0.3; }
+  .bg-dot-3 { top: 160px; background: #30363d; opacity: 0.3; }
+  .bg-dot-4 { top: 210px; background: #30363d; }
+</style>
+</head>
+<body>
+  <div class="bg-line bg-line-1"></div>
+  <div class="bg-line bg-line-2"></div>
+  <div class="bg-dot bg-dot-1"></div>
+  <div class="bg-dot bg-dot-2"></div>
+  <div class="bg-dot bg-dot-3"></div>
+  <div class="bg-dot bg-dot-4"></div>
+
+  <div class="container">
+    <div class="icon-area">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+        <rect width="128" height="128" rx="24" fill="#0d1117"/>
+        <line x1="36" y1="20" x2="36" y2="108" stroke="#30363d" stroke-width="3"/>
+        <circle cx="36" cy="32" r="6" fill="#58a6ff"/>
+        <rect x="50" y="26" width="44" height="12" rx="4" fill="#161b22" stroke="#30363d" stroke-width="1.5"/>
+        <circle cx="36" cy="56" r="6" fill="#30363d"/>
+        <rect x="50" y="50" width="44" height="12" rx="4" fill="#161b22" stroke="#30363d" stroke-width="1.5" opacity="0.3"/>
+        <line x1="56" y1="56" x2="88" y2="56" stroke="#f85149" stroke-width="2" opacity="0.6"/>
+        <circle cx="36" cy="80" r="6" fill="#3fb950"/>
+        <rect x="50" y="74" width="44" height="12" rx="4" fill="#161b22" stroke="#30363d" stroke-width="1.5"/>
+        <circle cx="36" cy="104" r="6" fill="#30363d"/>
+        <rect x="50" y="98" width="44" height="12" rx="4" fill="#161b22" stroke="#30363d" stroke-width="1.5" opacity="0.3"/>
+        <line x1="56" y1="104" x2="88" y2="104" stroke="#f85149" stroke-width="2" opacity="0.6"/>
+        <circle cx="102" cy="26" r="14" fill="#238636"/>
+        <path d="M94 26 L100 32 L112 20" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+    <div class="text-area">
+      <div class="title">GitHub PR Cleaner</div>
+      <div class="subtitle">Clean up noisy PR timelines. Hide deploy spam and silence specific users.</div>
+      <div class="tags">
+        <span class="tag blue">Deploy Filter</span>
+        <span class="tag green">User Mute</span>
+        <span class="tag orange">Per-PR</span>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

@@ -21,7 +21,10 @@ const showDeployItems = () => {
 
   items.forEach((item) => {
     const el = item as HTMLElement;
-    if (el.style.display === 'none' && DEPLOY_PATTERN.test(el.textContent ?? '')) {
+    if (
+      el.style.display === 'none' &&
+      DEPLOY_PATTERN.test(el.textContent ?? '')
+    ) {
       el.style.display = '';
     }
   });
@@ -30,7 +33,9 @@ const showDeployItems = () => {
 };
 
 const expandHiddenItems = () => {
-  const buttons = document.querySelectorAll<HTMLButtonElement>('button.ajax-pagination-btn');
+  const buttons = document.querySelectorAll<HTMLButtonElement>(
+    'button.ajax-pagination-btn',
+  );
 
   buttons.forEach((btn) => {
     if (/hidden\s*items?/i.test(btn.textContent ?? '')) {
@@ -45,4 +50,10 @@ const resetDeploy = () => {
   hiddenCount = 0;
 };
 
-export { hideDeployItems, showDeployItems, expandHiddenItems, getHiddenCount, resetDeploy };
+export {
+  hideDeployItems,
+  showDeployItems,
+  expandHiddenItems,
+  getHiddenCount,
+  resetDeploy,
+};

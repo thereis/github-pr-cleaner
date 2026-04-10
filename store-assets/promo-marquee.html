@@ -1,0 +1,274 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="UTF-8"/>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    width: 1400px;
+    height: 560px;
+    background: linear-gradient(135deg, #0d1117 0%, #161b22 40%, #1c2128 100%);
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    position: relative;
+  }
+
+  .bg-timeline {
+    position: absolute;
+    left: 80px;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background: #21262d;
+  }
+  .bg-timeline-2 {
+    position: absolute;
+    left: 100px;
+    top: 40px;
+    bottom: 40px;
+    width: 2px;
+    background: #21262d;
+    opacity: 0.4;
+  }
+
+  .bg-dot {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    left: 76px;
+  }
+  .bg-dot-1 { top: 80px; background: #58a6ff; opacity: 0.6; }
+  .bg-dot-2 { top: 160px; background: #30363d; opacity: 0.3; }
+  .bg-dot-3 { top: 240px; background: #30363d; opacity: 0.3; }
+  .bg-dot-4 { top: 320px; background: #3fb950; opacity: 0.6; }
+  .bg-dot-5 { top: 400px; background: #30363d; opacity: 0.3; }
+  .bg-dot-6 { top: 480px; background: #30363d; opacity: 0.3; }
+
+  .bg-bar {
+    position: absolute;
+    height: 10px;
+    border-radius: 5px;
+    left: 100px;
+  }
+  .bg-bar-1 { top: 76px; width: 60px; background: #161b22; border: 1px solid #30363d; opacity: 0.5; }
+  .bg-bar-2 { top: 156px; width: 50px; background: #161b22; border: 1px solid #30363d; opacity: 0.2; }
+  .bg-bar-3 { top: 236px; width: 55px; background: #161b22; border: 1px solid #30363d; opacity: 0.2; }
+  .bg-bar-4 { top: 316px; width: 65px; background: #161b22; border: 1px solid #30363d; opacity: 0.5; }
+  .bg-bar-5 { top: 396px; width: 45px; background: #161b22; border: 1px solid #30363d; opacity: 0.2; }
+  .bg-bar-6 { top: 476px; width: 55px; background: #161b22; border: 1px solid #30363d; opacity: 0.2; }
+
+  .bg-strike {
+    position: absolute;
+    height: 2px;
+    background: #f85149;
+    opacity: 0.3;
+    left: 108px;
+  }
+  .bg-strike-1 { top: 161px; width: 35px; }
+  .bg-strike-2 { top: 241px; width: 40px; }
+  .bg-strike-3 { top: 401px; width: 30px; }
+  .bg-strike-4 { top: 481px; width: 40px; }
+
+  .content {
+    display: flex;
+    align-items: center;
+    gap: 80px;
+    margin-left: 200px;
+    z-index: 1;
+  }
+
+  .left {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    max-width: 560px;
+  }
+
+  .title {
+    font-size: 48px;
+    font-weight: 800;
+    color: #f0f6fc;
+    letter-spacing: -1px;
+    line-height: 1.1;
+  }
+
+  .title .accent { color: #58a6ff; }
+
+  .subtitle {
+    font-size: 20px;
+    color: #8b949e;
+    line-height: 1.6;
+    max-width: 480px;
+  }
+
+  .tags {
+    display: flex;
+    gap: 12px;
+  }
+
+  .tag {
+    font-size: 14px;
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-weight: 600;
+  }
+
+  .tag.blue { background: rgba(31, 111, 235, 0.15); color: #58a6ff; border: 1px solid rgba(31, 111, 235, 0.3); }
+  .tag.green { background: rgba(63, 185, 80, 0.15); color: #3fb950; border: 1px solid rgba(63, 185, 80, 0.3); }
+  .tag.orange { background: rgba(240, 136, 62, 0.15); color: #f0883e; border: 1px solid rgba(240, 136, 62, 0.3); }
+  .tag.purple { background: rgba(139, 92, 246, 0.15); color: #a371f7; border: 1px solid rgba(139, 92, 246, 0.3); }
+
+  .right {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    align-items: center;
+  }
+
+  .icon-area svg {
+    width: 140px;
+    height: 140px;
+    filter: drop-shadow(0 8px 24px rgba(31, 111, 235, 0.25));
+  }
+
+  .before-after {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .mini-timeline {
+    background: #0d1117;
+    border: 1px solid #30363d;
+    border-radius: 8px;
+    padding: 10px 14px;
+    width: 160px;
+  }
+
+  .mini-timeline .label {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+  }
+
+  .mini-timeline.before .label { color: #f85149; }
+  .mini-timeline.after .label { color: #3fb950; }
+
+  .mini-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 2px 0;
+    font-size: 10px;
+    color: #8b949e;
+  }
+
+  .mini-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .mini-dot.blue { background: #58a6ff; }
+  .mini-dot.gray { background: #30363d; }
+  .mini-dot.green { background: #3fb950; }
+  .mini-dot.red { background: #f85149; }
+
+  .mini-row.dimmed { opacity: 0.3; text-decoration: line-through; }
+
+  .arrow {
+    font-size: 24px;
+    color: #3fb950;
+  }
+
+  .chip-mock {
+    background: #1f6feb;
+    color: #fff;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 12px;
+    margin-top: 2px;
+    align-self: flex-end;
+  }
+</style>
+</head>
+<body>
+  <div class="bg-timeline"></div>
+  <div class="bg-timeline-2"></div>
+  <div class="bg-dot bg-dot-1"></div>
+  <div class="bg-dot bg-dot-2"></div>
+  <div class="bg-dot bg-dot-3"></div>
+  <div class="bg-dot bg-dot-4"></div>
+  <div class="bg-dot bg-dot-5"></div>
+  <div class="bg-dot bg-dot-6"></div>
+  <div class="bg-bar bg-bar-1"></div>
+  <div class="bg-bar bg-bar-2"></div>
+  <div class="bg-bar bg-bar-3"></div>
+  <div class="bg-bar bg-bar-4"></div>
+  <div class="bg-bar bg-bar-5"></div>
+  <div class="bg-bar bg-bar-6"></div>
+  <div class="bg-strike bg-strike-1"></div>
+  <div class="bg-strike bg-strike-2"></div>
+  <div class="bg-strike bg-strike-3"></div>
+  <div class="bg-strike bg-strike-4"></div>
+
+  <div class="content">
+    <div class="left">
+      <div class="title">Clean up your <span class="accent">PR timelines</span></div>
+      <div class="subtitle">Hide deploy spam and silence noisy users. Focus on the code review that matters.</div>
+      <div class="tags">
+        <span class="tag blue">Deploy Filter</span>
+        <span class="tag green">User Mute</span>
+        <span class="tag orange">Per-PR</span>
+        <span class="tag purple">Global</span>
+      </div>
+    </div>
+    <div class="right">
+      <div class="icon-area">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+          <rect width="128" height="128" rx="24" fill="#0d1117"/>
+          <line x1="36" y1="20" x2="36" y2="108" stroke="#30363d" stroke-width="3"/>
+          <circle cx="36" cy="32" r="6" fill="#58a6ff"/>
+          <rect x="50" y="26" width="44" height="12" rx="4" fill="#161b22" stroke="#30363d" stroke-width="1.5"/>
+          <circle cx="36" cy="56" r="6" fill="#30363d"/>
+          <rect x="50" y="50" width="44" height="12" rx="4" fill="#161b22" stroke="#30363d" stroke-width="1.5" opacity="0.3"/>
+          <line x1="56" y1="56" x2="88" y2="56" stroke="#f85149" stroke-width="2" opacity="0.6"/>
+          <circle cx="36" cy="80" r="6" fill="#3fb950"/>
+          <rect x="50" y="74" width="44" height="12" rx="4" fill="#161b22" stroke="#30363d" stroke-width="1.5"/>
+          <circle cx="36" cy="104" r="6" fill="#30363d"/>
+          <rect x="50" y="98" width="44" height="12" rx="4" fill="#161b22" stroke="#30363d" stroke-width="1.5" opacity="0.3"/>
+          <line x1="56" y1="104" x2="88" y2="104" stroke="#f85149" stroke-width="2" opacity="0.6"/>
+          <circle cx="102" cy="26" r="14" fill="#238636"/>
+          <path d="M94 26 L100 32 L112 20" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <div class="before-after">
+        <div class="mini-timeline before">
+          <div class="label">Before</div>
+          <div class="mini-row"><span class="mini-dot blue"></span> Comment</div>
+          <div class="mini-row dimmed"><span class="mini-dot gray"></span> deployed</div>
+          <div class="mini-row dimmed"><span class="mini-dot gray"></span> deployed</div>
+          <div class="mini-row dimmed"><span class="mini-dot red"></span> deploy fail</div>
+          <div class="mini-row dimmed"><span class="mini-dot gray"></span> deployed</div>
+          <div class="mini-row"><span class="mini-dot green"></span> Review</div>
+          <div class="mini-row dimmed"><span class="mini-dot gray"></span> deployed</div>
+        </div>
+        <div class="arrow">&#8594;</div>
+        <div class="mini-timeline after">
+          <div class="label">After</div>
+          <div class="mini-row"><span class="mini-dot blue"></span> Comment</div>
+          <div class="mini-row"><span class="mini-dot green"></span> Review</div>
+          <div class="chip-mock">&#x1F4AC; 5 &nbsp; &#x1F6AB; 1</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

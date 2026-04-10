@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="en" data-color-mode="dark" data-dark-theme="dark">
+<head>
+<meta charset="UTF-8"/>
+<title>feat: add payment retry logic by alex-dev · Pull Request #842 · acme-corp/platform</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #0d1117;
+    color: #c9d1d9;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif;
+    font-size: 14px;
+    line-height: 1.5;
+    padding: 24px 40px;
+    max-width: 1012px;
+    margin: 0 auto;
+  }
+
+  .pr-header {
+    padding-bottom: 16px;
+    border-bottom: 1px solid #30363d;
+    margin-bottom: 16px;
+  }
+  .pr-title { font-size: 26px; font-weight: 400; color: #c9d1d9; }
+  .pr-title .number { color: #8b949e; }
+  .pr-meta { font-size: 13px; color: #8b949e; margin-top: 4px; }
+  .pr-meta .state { background: #238636; color: #fff; padding: 2px 10px; border-radius: 12px; font-size: 12px; font-weight: 600; }
+  .pr-meta .author { color: #58a6ff; font-weight: 600; }
+  .pr-meta .branch { background: #1f2937; color: #58a6ff; padding: 1px 6px; border-radius: 6px; font-size: 12px; font-family: monospace; }
+
+  .timeline { margin-top: 16px; }
+
+  .comment-item {
+    border-left: 2px solid #30363d;
+    margin-left: 20px;
+    padding: 0 0 0 40px;
+    position: relative;
+    margin-bottom: 16px;
+  }
+  .comment-item::before {
+    content: '';
+    position: absolute;
+    left: -7px;
+    top: 20px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #30363d;
+    border: 2px solid #0d1117;
+  }
+  .comment-box {
+    border: 1px solid #30363d;
+    border-radius: 6px;
+    margin-bottom: 4px;
+  }
+  .comment-header {
+    background: #161b22;
+    padding: 8px 16px;
+    border-bottom: 1px solid #30363d;
+    font-size: 13px;
+    color: #8b949e;
+    border-radius: 6px 6px 0 0;
+  }
+  .comment-header .author { color: #58a6ff; font-weight: 600; }
+  .comment-body { padding: 12px 16px; font-size: 14px; }
+
+  .push-item {
+    border-left: 2px solid #30363d;
+    margin-left: 20px;
+    padding: 6px 0 6px 40px;
+    position: relative;
+    font-size: 13px;
+    color: #8b949e;
+  }
+  .push-item::before {
+    content: '';
+    position: absolute;
+    left: -7px;
+    top: 12px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #58a6ff;
+    border: 2px solid #0d1117;
+  }
+  .push-item .user { color: #c9d1d9; font-weight: 600; }
+  .push-item code { background: #1f2937; padding: 1px 6px; border-radius: 4px; font-size: 12px; color: #58a6ff; }
+
+  .deploy-item-active {
+    border-left: 2px solid #30363d;
+    margin-left: 20px;
+    padding: 6px 0 6px 40px;
+    position: relative;
+    font-size: 13px;
+    color: #8b949e;
+  }
+  .deploy-item-active::before {
+    content: '';
+    position: absolute;
+    left: -7px;
+    top: 12px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #3fb950;
+    border: 2px solid #0d1117;
+  }
+  .deploy-item-active .user { color: #c9d1d9; font-weight: 600; }
+  .deploy-item-active .env { color: #c9d1d9; }
+  .deploy-item-active .gh-actions { color: #8b949e; }
+  .deploy-item-active .badge { display: inline-block; padding: 1px 8px; border-radius: 12px; font-size: 11px; font-weight: 500; margin-left: 4px; border: 1px solid #3fb950; color: #3fb950; }
+  .deploy-item-active a { color: #58a6ff; text-decoration: none; font-size: 12px; }
+
+  .review-item {
+    border-left: 2px solid #30363d;
+    margin-left: 20px;
+    padding: 6px 0 6px 40px;
+    position: relative;
+    font-size: 13px;
+    color: #8b949e;
+  }
+  .review-item::before {
+    content: '';
+    position: absolute;
+    left: -7px;
+    top: 12px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #3fb950;
+    border: 2px solid #0d1117;
+  }
+  .review-item .user { color: #c9d1d9; font-weight: 600; }
+
+  .chip {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 9999;
+    padding: 6px 14px;
+    border-radius: 20px;
+    background: #1f6feb;
+    color: #fff;
+    font-size: 13px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    font-weight: 500;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+    cursor: pointer;
+  }
+</style>
+</head>
+<body>
+
+<div class="pr-header">
+  <div class="pr-title">feat: add payment retry logic <span class="number">#842</span></div>
+  <div class="pr-meta">
+    <span class="state">Open</span>
+    <span class="author">alex-dev</span> wants to merge 12 commits into
+    <span class="branch">main</span> from <span class="branch">feat/payment-retry</span>
+  </div>
+</div>
+
+<div class="timeline">
+
+  <div class="comment-item">
+    <div class="comment-box">
+      <div class="comment-header"><span class="author">alex-dev</span> commented 2 days ago</div>
+      <div class="comment-body">This PR adds automatic retry logic for failed payments. It handles transient gateway errors with exponential backoff.</div>
+    </div>
+  </div>
+
+  <div class="push-item">
+    <span class="user">alex-dev</span> force-pushed the <code>feat/payment-retry</code> branch 2 days ago
+  </div>
+
+  <div class="comment-item">
+    <div class="comment-box">
+      <div class="comment-header"><span class="author">sarah-reviewer</span> commented 1 day ago</div>
+      <div class="comment-body">Looks good overall! Can we add a max retry limit config? Also the error mapping could be cleaner.</div>
+    </div>
+  </div>
+
+  <div class="push-item">
+    <span class="user">alex-dev</span> pushed a commit 1 day ago — <code>a3f82c1</code> fix: address review feedback
+  </div>
+
+  <div class="push-item">
+    <span class="user">alex-dev</span> pushed a commit 6 hours ago — <code>e91bc04</code> feat: add max retry config
+  </div>
+
+  <div class="deploy-item-active">
+    <span class="user">alex-dev</span> deployed to <span class="env">development</span> 3 hours ago — with <span class="gh-actions">GitHub Actions</span> <span class="badge">Active</span> <a href="#">View deployment</a>
+  </div>
+
+  <div class="review-item">
+    <span class="user">sarah-reviewer</span> approved these changes 2 hours ago
+  </div>
+
+  <div class="comment-item">
+    <div class="comment-box">
+      <div class="comment-header"><span class="author">ci-bot</span> commented 2 hours ago</div>
+      <div class="comment-body">All checks passed. Coverage: 94.2% (+1.3%)</div>
+    </div>
+  </div>
+
+</div>
+
+<div class="chip">💬 14 &nbsp; 🚫 1</div>
+
+</body>
+</html>
