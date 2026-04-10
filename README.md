@@ -2,6 +2,14 @@
 
 Chrome extension that cleans up noisy GitHub pull request timelines by hiding deployment items and letting you silence specific users.
 
+## Screenshots
+
+| Before | After |
+|--------|-------|
+| ![Before](store-assets/before.png) | ![After](store-assets/after.png) |
+
+![Popup](store-assets/popup.png)
+
 ## Features
 
 - **Hide deploy noise** — automatically hides timeline items matching deployment patterns
