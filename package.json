@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Automatically hides deployment noise from GitHub pull request timelines",
   "type": "module",
+  "packageManager": "pnpm@10.15.0",
   "scripts": {
     "build": "rolldown -c",
     "watch": "rolldown -c --watch",
