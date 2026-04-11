@@ -5,9 +5,14 @@ let popoverVisible = false;
 type ChipData = {
   deployCount: number;
   silencedUsers: Map<string, number>;
+  matchedTextPatterns: Map<string, number>;
 };
 
-let currentData: ChipData = { deployCount: 0, silencedUsers: new Map() };
+let currentData: ChipData = {
+  deployCount: 0,
+  silencedUsers: new Map(),
+  matchedTextPatterns: new Map(),
+};
 
 const ensureChip = () => {
   if (chipEl) return chipEl;
@@ -80,6 +85,14 @@ const onDocumentClick = (e: Event) => {
   popoverEl!.style.display = 'none';
 };
 
+const escapeHtml = (s: string): string =>
+  s
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+
 const renderPopover = () => {
   const popover = ensurePopover();
   const lines: string[] = [];
@@ -90,7 +103,16 @@ const renderPopover = () => {
   if (currentData.silencedUsers.size > 0) {
     lines.push(`<div style="margin-top:8px;font-weight:600">🚫 Silenced users</div>`);
     for (const [user, count] of currentData.silencedUsers) {
-      lines.push(`<div style="padding-left:8px">@${user} — ${count} comments</div>`);
+      lines.push(`<div style="padding-left:8px">@${escapeHtml(user)} — ${count} comments</div>`);
+    }
+  }
+
+  if (currentData.matchedTextPatterns.size > 0) {
+    lines.push(`<div style="margin-top:8px;font-weight:600">🔍 Hidden by text</div>`);
+    for (const [label, count] of currentData.matchedTextPatterns) {
+      lines.push(
+        `<div style="padding-left:8px">${escapeHtml(label)} — ${count} item${count === 1 ? '' : 's'}</div>`,
+      );
     }
   }
 
@@ -100,7 +122,7 @@ const renderPopover = () => {
 const updateChip = (data: ChipData) => {
   currentData = data;
   const chip = ensureChip();
-  const total = data.deployCount + data.silencedUsers.size;
+  const total = data.deployCount + data.silencedUsers.size + data.matchedTextPatterns.size;
 
   if (total === 0) {
     chip.style.opacity = '0';
@@ -111,6 +133,7 @@ const updateChip = (data: ChipData) => {
   const parts: string[] = [];
   if (data.deployCount > 0) parts.push(`💬 ${data.deployCount}`);
   if (data.silencedUsers.size > 0) parts.push(`🚫 ${data.silencedUsers.size}`);
+  if (data.matchedTextPatterns.size > 0) parts.push(`🔍 ${data.matchedTextPatterns.size}`);
 
   chip.textContent = parts.join('  ');
   chip.style.opacity = '1';
