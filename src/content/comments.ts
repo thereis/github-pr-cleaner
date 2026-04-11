@@ -1,3 +1,5 @@
+import { TIMELINE_ITEM_SELECTOR } from '../constants';
+
 let silencedUsers = new Map<string, number>();
 
 const getPrAuthor = (): string | null => {
@@ -31,7 +33,7 @@ const hideUserComments = (hiddenUsernames: string[]) => {
   if (hiddenUsernames.length === 0) return silencedUsers;
 
   const hiddenSet = new Set(hiddenUsernames);
-  const items = document.querySelectorAll('.js-timeline-item, .TimelineItem');
+  const items = document.querySelectorAll(TIMELINE_ITEM_SELECTOR);
 
   items.forEach((item) => {
     const el = item as HTMLElement;
@@ -49,7 +51,7 @@ const hideUserComments = (hiddenUsernames: string[]) => {
 };
 
 const showAllComments = () => {
-  const items = document.querySelectorAll('.js-timeline-item, .TimelineItem');
+  const items = document.querySelectorAll(TIMELINE_ITEM_SELECTOR);
 
   items.forEach((item) => {
     const el = item as HTMLElement;

@@ -2,6 +2,7 @@ import type { MessageHandlerMap } from './types';
 import { handlers as cleanerHandlers, onInstall as cleanerOnInstall } from './cleaner';
 import { handlers as commentsHandlers, onInstall as commentsOnInstall } from './comments';
 import { logger } from '../logger';
+import { PR_URL_RE } from '../constants';
 
 const features: { handlers: MessageHandlerMap; onInstall?: () => void }[] = [
   { handlers: cleanerHandlers, onInstall: cleanerOnInstall },
@@ -20,8 +21,6 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   const handler = allHandlers[message.type as string];
   if (handler) return handler(message, sender, sendResponse);
 });
-
-const PR_URL_RE = /^https:\/\/github\.com\/[^/]+\/[^/]+\/pull\/\d+/;
 
 const ensureContentScript = (tabId: number) => {
   chrome.tabs.sendMessage(tabId, { type: 'ping' }, (response) => {

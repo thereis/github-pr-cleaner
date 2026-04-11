@@ -14,8 +14,7 @@ import {
 } from './comments';
 import { updateChip, hideChip } from './chip';
 import { logger } from '../logger';
-
-const PR_CONVERSATION_PATTERN = /^\/[^/]+\/[^/]+\/pull\/\d+\/?$/;
+import { PR_CONVERSATION_PATH_RE, PR_PATH_RE, TIMELINE_ITEM_SELECTOR } from '../constants';
 
 let currentUrl = location.href;
 let timelineObserver: MutationObserver | null = null;
@@ -24,10 +23,10 @@ let commentsEnabled = false;
 let globalHiddenUsers: string[] = [];
 let perPrHiddenUsers: Record<string, string[]> = {};
 
-const isPRConversationPage = () => PR_CONVERSATION_PATTERN.test(location.pathname);
+const isPRConversationPage = () => PR_CONVERSATION_PATH_RE.test(location.pathname);
 
 const getPrPath = () => {
-  const match = location.pathname.match(/^\/[^/]+\/[^/]+\/pull\/\d+/);
+  const match = location.pathname.match(PR_PATH_RE);
   return match?.[0] ?? '';
 };
 
@@ -82,7 +81,7 @@ const observeTimeline = () => {
         if (node.nodeType !== Node.ELEMENT_NODE) continue;
         const el = node as Element;
 
-        if (el.matches?.('.js-timeline-item, .TimelineItem')) {
+        if (el.matches?.(TIMELINE_ITEM_SELECTOR)) {
           shouldRun = true;
           break;
         }

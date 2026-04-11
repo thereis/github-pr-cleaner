@@ -1,4 +1,5 @@
 import { logger } from './logger';
+import { PR_PATH_RE, STORAGE_KEYS } from './constants';
 
 const deployToggle = document.getElementById('deploy-toggle') as HTMLInputElement;
 const deployLabel = document.getElementById('deploy-status') as HTMLSpanElement;
@@ -7,7 +8,6 @@ const commentsLabel = document.getElementById('comments-status') as HTMLSpanElem
 const userListContainer = document.getElementById('user-list-container') as HTMLDivElement;
 const reloadBanner = document.getElementById('reload-banner') as HTMLDivElement;
 const reloadBtn = document.getElementById('reload-btn') as HTMLButtonElement;
-let needsReload = false;
 
 let currentPrPath = '';
 let commentsState: {
@@ -93,14 +93,12 @@ const renderUserList = () => {
 };
 
 const showReloadBanner = () => {
-  needsReload = true;
   reloadBanner.style.display = 'block';
 };
 
 reloadBtn.addEventListener('click', () => {
   if (activeTabId) {
     chrome.tabs.reload(activeTabId);
-    needsReload = false;
     reloadBanner.style.display = 'none';
   }
 });
@@ -140,16 +138,21 @@ const fetchPrUsers = (callback?: () => void) => {
 };
 
 chrome.storage.local.get(
-  ['enabled', 'commentsEnabled', 'globalHiddenUsers', 'perPrHiddenUsers'],
+  [
+    STORAGE_KEYS.deployEnabled,
+    STORAGE_KEYS.commentsEnabled,
+    STORAGE_KEYS.globalHiddenUsers,
+    STORAGE_KEYS.perPrHiddenUsers,
+  ],
   (result: Record<string, unknown>) => {
     logger.debug('popup storage read', result);
 
-    updateDeployUI((result.enabled as boolean) ?? true);
+    updateDeployUI((result[STORAGE_KEYS.deployEnabled] as boolean) ?? true);
 
     commentsState = {
-      enabled: (result.commentsEnabled as boolean) ?? false,
-      globalHiddenUsers: (result.globalHiddenUsers as string[]) ?? [],
-      perPrHiddenUsers: (result.perPrHiddenUsers as Record<string, string[]>) ?? {},
+      enabled: (result[STORAGE_KEYS.commentsEnabled] as boolean) ?? false,
+      globalHiddenUsers: (result[STORAGE_KEYS.globalHiddenUsers] as string[]) ?? [],
+      perPrHiddenUsers: (result[STORAGE_KEYS.perPrHiddenUsers] as Record<string, string[]>) ?? {},
     };
     updateCommentsUI();
 
@@ -159,7 +162,7 @@ chrome.storage.local.get(
 
       activeTabId = tab.id;
       const url = new URL(tab.url);
-      const match = url.pathname.match(/^\/[^/]+\/[^/]+\/pull\/\d+/);
+      const match = url.pathname.match(PR_PATH_RE);
       currentPrPath = match?.[0] ?? '';
       logger.debug('popup prPath', currentPrPath);
 

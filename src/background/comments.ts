@@ -1,13 +1,6 @@
 import type { MessageHandlerMap } from './types';
 import { logger } from '../logger';
-
-const STORAGE_KEYS = {
-  enabled: 'commentsEnabled',
-  global: 'globalHiddenUsers',
-  perPr: 'perPrHiddenUsers',
-};
-
-const PR_URL_PATTERN = 'https://github.com/*/pull/*';
+import { PR_URL_MATCH_PATTERN, STORAGE_KEYS } from '../constants';
 
 const getState = (
   callback: (state: {
@@ -17,12 +10,12 @@ const getState = (
   }) => void,
 ) => {
   chrome.storage.local.get(
-    [STORAGE_KEYS.enabled, STORAGE_KEYS.global, STORAGE_KEYS.perPr],
+    [STORAGE_KEYS.commentsEnabled, STORAGE_KEYS.globalHiddenUsers, STORAGE_KEYS.perPrHiddenUsers],
     (result: Record<string, unknown>) => {
       const state = {
-        enabled: (result[STORAGE_KEYS.enabled] as boolean) ?? false,
-        globalHiddenUsers: (result[STORAGE_KEYS.global] as string[]) ?? [],
-        perPrHiddenUsers: (result[STORAGE_KEYS.perPr] as Record<string, string[]>) ?? {},
+        enabled: (result[STORAGE_KEYS.commentsEnabled] as boolean) ?? false,
+        globalHiddenUsers: (result[STORAGE_KEYS.globalHiddenUsers] as string[]) ?? [],
+        perPrHiddenUsers: (result[STORAGE_KEYS.perPrHiddenUsers] as Record<string, string[]>) ?? {},
       };
       logger.debug('bg:comments getState', state);
       callback(state);
@@ -32,7 +25,7 @@ const getState = (
 
 const broadcastState = () => {
   getState((state) => {
-    chrome.tabs.query({ url: PR_URL_PATTERN }, (tabs) => {
+    chrome.tabs.query({ url: PR_URL_MATCH_PATTERN }, (tabs) => {
       for (const tab of tabs) {
         if (tab.id) {
           chrome.tabs.sendMessage(tab.id, { type: 'comments-updated', ...state });
@@ -44,12 +37,15 @@ const broadcastState = () => {
 
 const onInstall = () => {
   chrome.storage.local.get(
-    [STORAGE_KEYS.enabled, STORAGE_KEYS.global, STORAGE_KEYS.perPr],
+    [STORAGE_KEYS.commentsEnabled, STORAGE_KEYS.globalHiddenUsers, STORAGE_KEYS.perPrHiddenUsers],
     (result: Record<string, unknown>) => {
       const defaults: Record<string, unknown> = {};
-      if (result[STORAGE_KEYS.enabled] === undefined) defaults[STORAGE_KEYS.enabled] = false;
-      if (result[STORAGE_KEYS.global] === undefined) defaults[STORAGE_KEYS.global] = [];
-      if (result[STORAGE_KEYS.perPr] === undefined) defaults[STORAGE_KEYS.perPr] = {};
+      if (result[STORAGE_KEYS.commentsEnabled] === undefined)
+        defaults[STORAGE_KEYS.commentsEnabled] = false;
+      if (result[STORAGE_KEYS.globalHiddenUsers] === undefined)
+        defaults[STORAGE_KEYS.globalHiddenUsers] = [];
+      if (result[STORAGE_KEYS.perPrHiddenUsers] === undefined)
+        defaults[STORAGE_KEYS.perPrHiddenUsers] = {};
       if (Object.keys(defaults).length > 0) chrome.storage.local.set(defaults);
     },
   );
@@ -64,10 +60,10 @@ const handlers: MessageHandlerMap = {
 
   'toggle-comments': (_message, _sender, sendResponse) => {
     logger.debug('bg:comments handling toggle-comments');
-    chrome.storage.local.get(STORAGE_KEYS.enabled, (result: Record<string, unknown>) => {
-      const enabled = !((result[STORAGE_KEYS.enabled] as boolean) ?? false);
+    chrome.storage.local.get(STORAGE_KEYS.commentsEnabled, (result: Record<string, unknown>) => {
+      const enabled = !((result[STORAGE_KEYS.commentsEnabled] as boolean) ?? false);
       logger.debug('bg:comments toggled to', enabled);
-      chrome.storage.local.set({ [STORAGE_KEYS.enabled]: enabled }, () => {
+      chrome.storage.local.set({ [STORAGE_KEYS.commentsEnabled]: enabled }, () => {
         broadcastState();
         sendResponse({ enabled });
       });
@@ -77,13 +73,13 @@ const handlers: MessageHandlerMap = {
 
   'hide-user': (message, _sender, sendResponse) => {
     const { username, prPath } = message as { username: string; prPath: string };
-    chrome.storage.local.get(STORAGE_KEYS.perPr, (result: Record<string, unknown>) => {
+    chrome.storage.local.get(STORAGE_KEYS.perPrHiddenUsers, (result: Record<string, unknown>) => {
       const perPr: Record<string, string[]> =
-        (result[STORAGE_KEYS.perPr] as Record<string, string[]>) ?? {};
+        (result[STORAGE_KEYS.perPrHiddenUsers] as Record<string, string[]>) ?? {};
       const list = perPr[prPath] ?? [];
       if (!list.includes(username)) list.push(username);
       perPr[prPath] = list;
-      chrome.storage.local.set({ [STORAGE_KEYS.perPr]: perPr }, () => {
+      chrome.storage.local.set({ [STORAGE_KEYS.perPrHiddenUsers]: perPr }, () => {
         broadcastState();
         sendResponse({ perPrHiddenUsers: perPr });
       });
@@ -93,12 +89,12 @@ const handlers: MessageHandlerMap = {
 
   'unhide-user': (message, _sender, sendResponse) => {
     const { username, prPath } = message as { username: string; prPath: string };
-    chrome.storage.local.get(STORAGE_KEYS.perPr, (result: Record<string, unknown>) => {
+    chrome.storage.local.get(STORAGE_KEYS.perPrHiddenUsers, (result: Record<string, unknown>) => {
       const perPr: Record<string, string[]> =
-        (result[STORAGE_KEYS.perPr] as Record<string, string[]>) ?? {};
+        (result[STORAGE_KEYS.perPrHiddenUsers] as Record<string, string[]>) ?? {};
       perPr[prPath] = (perPr[prPath] ?? []).filter((u) => u !== username);
       if (perPr[prPath].length === 0) delete perPr[prPath];
-      chrome.storage.local.set({ [STORAGE_KEYS.perPr]: perPr }, () => {
+      chrome.storage.local.set({ [STORAGE_KEYS.perPrHiddenUsers]: perPr }, () => {
         broadcastState();
         sendResponse({ perPrHiddenUsers: perPr });
       });
@@ -108,10 +104,10 @@ const handlers: MessageHandlerMap = {
 
   'hide-user-global': (message, _sender, sendResponse) => {
     const { username } = message as { username: string };
-    chrome.storage.local.get(STORAGE_KEYS.global, (result: Record<string, unknown>) => {
-      const list: string[] = (result[STORAGE_KEYS.global] as string[]) ?? [];
+    chrome.storage.local.get(STORAGE_KEYS.globalHiddenUsers, (result: Record<string, unknown>) => {
+      const list: string[] = (result[STORAGE_KEYS.globalHiddenUsers] as string[]) ?? [];
       if (!list.includes(username)) list.push(username);
-      chrome.storage.local.set({ [STORAGE_KEYS.global]: list }, () => {
+      chrome.storage.local.set({ [STORAGE_KEYS.globalHiddenUsers]: list }, () => {
         broadcastState();
         sendResponse({ globalHiddenUsers: list });
       });
@@ -121,11 +117,11 @@ const handlers: MessageHandlerMap = {
 
   'unhide-user-global': (message, _sender, sendResponse) => {
     const { username } = message as { username: string };
-    chrome.storage.local.get(STORAGE_KEYS.global, (result: Record<string, unknown>) => {
-      const list: string[] = ((result[STORAGE_KEYS.global] as string[]) ?? []).filter(
+    chrome.storage.local.get(STORAGE_KEYS.globalHiddenUsers, (result: Record<string, unknown>) => {
+      const list: string[] = ((result[STORAGE_KEYS.globalHiddenUsers] as string[]) ?? []).filter(
         (u: string) => u !== username,
       );
-      chrome.storage.local.set({ [STORAGE_KEYS.global]: list }, () => {
+      chrome.storage.local.set({ [STORAGE_KEYS.globalHiddenUsers]: list }, () => {
         broadcastState();
         sendResponse({ globalHiddenUsers: list });
       });

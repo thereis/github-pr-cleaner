@@ -1,3 +1,5 @@
+import { TIMELINE_ITEM_SELECTOR } from '../constants';
+
 const DEPLOY_PATTERN = /deploy/i;
 
 let hiddenCount = 0;
@@ -17,7 +19,7 @@ const hideDeployItems = (root?: Element) => {
 };
 
 const showDeployItems = () => {
-  const items = document.querySelectorAll('.js-timeline-item, .TimelineItem');
+  const items = document.querySelectorAll(TIMELINE_ITEM_SELECTOR);
 
   items.forEach((item) => {
     const el = item as HTMLElement;
