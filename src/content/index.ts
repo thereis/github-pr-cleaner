@@ -12,9 +12,11 @@ import {
   getSilencedUsers,
   resetComments,
 } from './comments';
+import { hideMatchingItems, showAllMatchedItems, getMatchedPatterns, resetText } from './text';
 import { updateChip, hideChip } from './chip';
 import { logger } from '../logger';
 import { PR_CONVERSATION_PATH_RE, PR_PATH_RE, TIMELINE_ITEM_SELECTOR } from '../constants';
+import type { TextPattern } from '../constants';
 
 let currentUrl = location.href;
 let timelineObserver: MutationObserver | null = null;
@@ -22,6 +24,9 @@ let deployEnabled = true;
 let commentsEnabled = false;
 let globalHiddenUsers: string[] = [];
 let perPrHiddenUsers: Record<string, string[]> = {};
+let textPatternsEnabled = false;
+let globalTextPatterns: TextPattern[] = [];
+let perPrTextPatterns: Record<string, TextPattern[]> = {};
 
 const isPRConversationPage = () => PR_CONVERSATION_PATH_RE.test(location.pathname);
 
@@ -37,10 +42,25 @@ const getEffectiveHiddenUsers = (): string[] => {
   return Array.from(merged);
 };
 
+const getEffectiveTextPatterns = (): TextPattern[] => {
+  const prPath = getPrPath();
+  const perPr = perPrTextPatterns[prPath] ?? [];
+  const seen = new Set<string>();
+  const merged: TextPattern[] = [];
+  for (const p of [...globalTextPatterns, ...perPr]) {
+    const key = `${p.regex ? 'r' : 's'}:${p.pattern}`;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    merged.push(p);
+  }
+  return merged;
+};
+
 const refreshChip = () => {
   updateChip({
     deployCount: deployEnabled ? getHiddenCount() : 0,
     silencedUsers: commentsEnabled ? getSilencedUsers() : new Map(),
+    matchedTextPatterns: textPatternsEnabled ? getMatchedPatterns() : new Map(),
   });
 };
 
@@ -59,9 +79,18 @@ const runComments = () => {
   hideUserComments(hidden);
 };
 
+const runText = () => {
+  if (!textPatternsEnabled) {
+    showAllMatchedItems();
+    return;
+  }
+  hideMatchingItems(getEffectiveTextPatterns());
+};
+
 const run = () => {
   runDeploy();
   runComments();
+  runText();
   refreshChip();
 };
 
@@ -103,6 +132,7 @@ const observeTimeline = () => {
 const reset = () => {
   resetDeploy();
   resetComments();
+  resetText();
   if (timelineObserver) {
     timelineObserver.disconnect();
     timelineObserver = null;
@@ -164,6 +194,15 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
     refreshChip();
     return;
   }
+
+  if (message.type === 'text-updated') {
+    textPatternsEnabled = message.enabled;
+    globalTextPatterns = message.globalTextPatterns;
+    perPrTextPatterns = message.perPrTextPatterns;
+    runText();
+    refreshChip();
+    return;
+  }
 });
 
 logger.info('content script loaded', { url: location.href, isPR: isPRConversationPage() });
@@ -187,6 +226,18 @@ chrome.runtime.sendMessage({ type: 'get-comments-state' }, (response) => {
 
   if (commentsEnabled && isPRConversationPage()) {
     runComments();
+  }
+  refreshChip();
+});
+
+chrome.runtime.sendMessage({ type: 'get-text-state' }, (response) => {
+  logger.debug('content get-text-state response', response);
+  textPatternsEnabled = response.enabled;
+  globalTextPatterns = response.globalTextPatterns;
+  perPrTextPatterns = response.perPrTextPatterns;
+
+  if (textPatternsEnabled && isPRConversationPage()) {
+    runText();
   }
   refreshChip();
 });

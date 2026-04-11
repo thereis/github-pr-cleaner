@@ -190,6 +190,142 @@
       .reload-btn:hover {
         background: #d29922;
       }
+
+      .text-add-row {
+        display: flex;
+        gap: 6px;
+        margin-top: 10px;
+      }
+
+      .text-input {
+        flex: 1;
+        min-width: 0;
+        background: #0d1117;
+        border: 1px solid #30363d;
+        border-radius: 6px;
+        padding: 5px 8px;
+        color: #c9d1d9;
+        font-size: 12px;
+        font-family: inherit;
+      }
+
+      .text-input::placeholder {
+        color: #484f58;
+      }
+
+      .text-input:focus {
+        outline: none;
+        border-color: #1f6feb;
+      }
+
+      .text-add-btn {
+        background: #1f6feb;
+        color: #fff;
+        border: none;
+        border-radius: 6px;
+        padding: 5px 10px;
+        font-size: 12px;
+        font-weight: 500;
+        font-family: inherit;
+        cursor: pointer;
+        flex-shrink: 0;
+      }
+
+      .text-add-btn:hover {
+        background: #388bfd;
+      }
+
+      .text-error {
+        display: none;
+        margin-top: 6px;
+        font-size: 11px;
+        color: #f85149;
+      }
+
+      .text-list {
+        margin-top: 10px;
+        max-height: 200px;
+        overflow-y: auto;
+      }
+
+      .text-row {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 4px 0;
+        font-size: 13px;
+        min-width: 0;
+      }
+
+      .text-row input[type='checkbox'] {
+        accent-color: #1f6feb;
+        cursor: pointer;
+        flex-shrink: 0;
+      }
+
+      .text-pattern {
+        flex: 1;
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        color: #8b949e;
+      }
+
+      .text-pattern.checked {
+        color: #c9d1d9;
+      }
+
+      .text-pattern.regex {
+        font-family: 'SF Mono', Menlo, Consolas, monospace;
+        font-size: 12px;
+        color: #d2a8ff;
+      }
+
+      .icon-btn {
+        background: none;
+        border: none;
+        cursor: pointer;
+        font-size: 13px;
+        padding: 2px 4px;
+        border-radius: 4px;
+        color: #8b949e;
+        opacity: 0.4;
+        transition: opacity 0.2s;
+        flex-shrink: 0;
+      }
+
+      .icon-btn:hover {
+        opacity: 0.8;
+      }
+
+      .icon-btn.active {
+        opacity: 1;
+      }
+
+      .icon-btn.regex-btn.active {
+        color: #d2a8ff;
+      }
+
+      .icon-btn.globe-btn.active {
+        color: #79c0ff;
+      }
+
+      .icon-btn.delete-btn {
+        color: #f85149;
+        opacity: 0.5;
+      }
+
+      .icon-btn.delete-btn:hover {
+        opacity: 1;
+      }
+
+      .section-hint {
+        font-size: 11px;
+        color: #6e7681;
+        margin-top: 4px;
+        line-height: 1.4;
+      }
     </style>
   </head>
   <body>
@@ -220,6 +356,25 @@
       <div id="reload-banner" class="reload-banner">
         <span>Reload page to restore hidden comments</span>
         <button id="reload-btn" class="reload-btn">Reload</button>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="row">
+        <span class="status">Hide by text: <span id="text-status">Off</span></span>
+        <label class="switch">
+          <input type="checkbox" id="text-toggle" />
+          <span class="slider"></span>
+        </label>
+      </div>
+      <div class="section-hint">Only hides items from the PR timeline.</div>
+      <div id="text-container" style="display: none">
+        <div class="text-add-row">
+          <input type="text" id="text-input" class="text-input" placeholder="+ Add pattern" />
+          <button id="text-add-btn" class="text-add-btn">Add</button>
+        </div>
+        <div id="text-error" class="text-error"></div>
+        <div id="text-list-container" class="text-list"></div>
       </div>
     </div>
 

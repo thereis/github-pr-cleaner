@@ -10,7 +10,15 @@ const STORAGE_KEYS = {
   commentsEnabled: 'commentsEnabled',
   globalHiddenUsers: 'globalHiddenUsers',
   perPrHiddenUsers: 'perPrHiddenUsers',
+  textPatternsEnabled: 'textPatternsEnabled',
+  globalTextPatterns: 'globalTextPatterns',
+  perPrTextPatterns: 'perPrTextPatterns',
 } as const;
+
+type TextPattern = {
+  pattern: string;
+  regex: boolean;
+};
 
 export {
   PR_URL_MATCH_PATTERN,
@@ -20,3 +28,4 @@ export {
   TIMELINE_ITEM_SELECTOR,
   STORAGE_KEYS,
 };
+export type { TextPattern };
