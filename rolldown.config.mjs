@@ -7,6 +7,7 @@ const copyAssets = () => ({
     mkdirSync("dist", { recursive: true });
     copyFileSync("src/manifest.json", "dist/manifest.json");
     copyFileSync("src/popup.html", "dist/popup.html");
+    copyFileSync("src/options.html", "dist/options.html");
     for (const size of ["16", "48", "128"]) {
       copyFileSync(`src/icon${size}.png`, `dist/icon${size}.png`);
     }
@@ -37,6 +38,14 @@ export default defineConfig([
       dir: "dist",
       format: "esm",
       entryFileNames: "background.js",
+    },
+  },
+  {
+    input: "src/options.ts",
+    output: {
+      dir: "dist",
+      format: "iife",
+      entryFileNames: "options.js",
     },
   },
 ]);
