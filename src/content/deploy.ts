@@ -4,12 +4,17 @@ const DEPLOY_PATTERN = /deploy/i;
 
 let hiddenCount = 0;
 
+const isPrDescription = (el: Element) =>
+  el.matches('.js-command-palette-pull-body') ||
+  el.closest('.js-command-palette-pull-body') !== null;
+
 const hideDeployItems = (root?: Element) => {
   const items = (root || document).querySelectorAll('.TimelineItem');
 
   items.forEach((item) => {
-    if (!DEPLOY_PATTERN.test(item.textContent ?? '')) return;
     const target = (item.closest('.js-timeline-item') || item) as HTMLElement;
+    if (isPrDescription(target)) return;
+    if (!DEPLOY_PATTERN.test(item.textContent ?? '')) return;
     if (target.style.display === 'none') return;
     target.style.display = 'none';
     hiddenCount++;
