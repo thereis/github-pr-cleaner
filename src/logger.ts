@@ -1,8 +1,18 @@
 import log from 'loglevel';
+import { STORAGE_KEYS } from './constants';
 
 const PREFIX = '[PR-Cleaner]';
 
-log.setLevel('debug');
+log.setLevel('error');
+
+const initLogger = (): Promise<void> =>
+  new Promise((resolve) => {
+    chrome.storage.local.get(STORAGE_KEYS.debugLogsEnabled, (result) => {
+      const enabled = result[STORAGE_KEYS.debugLogsEnabled] === true;
+      log.setLevel(enabled ? 'debug' : 'error');
+      resolve();
+    });
+  });
 
 const logger = {
   debug: (...args: unknown[]) => log.debug(PREFIX, ...args),
@@ -11,4 +21,4 @@ const logger = {
   error: (...args: unknown[]) => log.error(PREFIX, ...args),
 };
 
-export { logger };
+export { logger, initLogger };

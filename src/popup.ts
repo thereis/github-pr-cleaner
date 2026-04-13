@@ -1,6 +1,8 @@
-import { logger } from './logger';
+import { logger, initLogger } from './logger';
 import { PR_PATH_RE, STORAGE_KEYS } from './constants';
 import type { TextPattern } from './constants';
+
+initLogger();
 
 const deployToggle = document.getElementById('deploy-toggle') as HTMLInputElement;
 const deployLabel = document.getElementById('deploy-status') as HTMLSpanElement;
@@ -16,6 +18,8 @@ const textInput = document.getElementById('text-input') as HTMLInputElement;
 const textAddBtn = document.getElementById('text-add-btn') as HTMLButtonElement;
 const textError = document.getElementById('text-error') as HTMLDivElement;
 const textListContainer = document.getElementById('text-list-container') as HTMLDivElement;
+const versionEl = document.getElementById('version') as HTMLSpanElement;
+const settingsBtn = document.getElementById('settings-btn') as HTMLButtonElement;
 
 let currentPrPath = '';
 let commentsState: {
@@ -412,4 +416,10 @@ textInput.addEventListener('keydown', (e) => {
     e.preventDefault();
     handleAddText();
   }
+});
+
+versionEl.textContent = `v${chrome.runtime.getManifest().version}`;
+
+settingsBtn.addEventListener('click', () => {
+  chrome.runtime.openOptionsPage();
 });

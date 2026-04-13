@@ -14,9 +14,11 @@ import {
 } from './comments';
 import { hideMatchingItems, showAllMatchedItems, getMatchedPatterns, resetText } from './text';
 import { updateChip, hideChip } from './chip';
-import { logger } from '../logger';
+import { logger, initLogger } from '../logger';
 import { PR_CONVERSATION_PATH_RE, PR_PATH_RE, TIMELINE_ITEM_SELECTOR } from '../constants';
 import type { TextPattern } from '../constants';
+
+initLogger();
 
 let currentUrl = location.href;
 let timelineObserver: MutationObserver | null = null;
