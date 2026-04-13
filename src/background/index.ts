@@ -2,8 +2,10 @@ import type { MessageHandlerMap } from './types';
 import { handlers as cleanerHandlers, onInstall as cleanerOnInstall } from './cleaner';
 import { handlers as commentsHandlers, onInstall as commentsOnInstall } from './comments';
 import { handlers as textHandlers, onInstall as textOnInstall } from './text';
-import { logger } from '../logger';
+import { logger, initLogger } from '../logger';
 import { PR_URL_RE } from '../constants';
+
+initLogger();
 
 const features: { handlers: MessageHandlerMap; onInstall?: () => void }[] = [
   { handlers: cleanerHandlers, onInstall: cleanerOnInstall },

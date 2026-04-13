@@ -1,6 +1,8 @@
-import { logger } from './logger';
+import { logger, initLogger } from './logger';
 import { PR_PATH_RE, STORAGE_KEYS } from './constants';
 import type { TextPattern } from './constants';
+
+initLogger();
 
 const deployToggle = document.getElementById('deploy-toggle') as HTMLInputElement;
 const deployLabel = document.getElementById('deploy-status') as HTMLSpanElement;
