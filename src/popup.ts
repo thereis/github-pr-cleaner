@@ -18,6 +18,8 @@ const textInput = document.getElementById('text-input') as HTMLInputElement;
 const textAddBtn = document.getElementById('text-add-btn') as HTMLButtonElement;
 const textError = document.getElementById('text-error') as HTMLDivElement;
 const textListContainer = document.getElementById('text-list-container') as HTMLDivElement;
+const versionEl = document.getElementById('version') as HTMLSpanElement;
+const settingsBtn = document.getElementById('settings-btn') as HTMLButtonElement;
 
 let currentPrPath = '';
 let commentsState: {
@@ -414,4 +416,10 @@ textInput.addEventListener('keydown', (e) => {
     e.preventDefault();
     handleAddText();
   }
+});
+
+versionEl.textContent = `v${chrome.runtime.getManifest().version}`;
+
+settingsBtn.addEventListener('click', () => {
+  chrome.runtime.openOptionsPage();
 });
