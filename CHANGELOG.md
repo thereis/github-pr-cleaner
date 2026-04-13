@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.0](https://github.com/thereis/github-pr-cleaner/compare/v1.2.0...v1.3.0) (2026-04-13)
+
+
+### Features
+
+* enhance deploy item visibility by excluding PR descriptions from hiding logic ([c23b47b](https://github.com/thereis/github-pr-cleaner/commit/c23b47b50a7c19185a69f512e9c75e9433b818fa))
+
 ## [1.2.0](https://github.com/thereis/github-pr-cleaner/compare/v1.1.0...v1.2.0) (2026-04-13)
 
 
