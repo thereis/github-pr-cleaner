@@ -13,6 +13,8 @@ const reloadBanner = document.getElementById('reload-banner') as HTMLDivElement;
 const reloadBtn = document.getElementById('reload-btn') as HTMLButtonElement;
 const textToggle = document.getElementById('text-toggle') as HTMLInputElement;
 const textLabel = document.getElementById('text-status') as HTMLSpanElement;
+const workflowsToggle = document.getElementById('workflows-toggle') as HTMLInputElement;
+const workflowsLabel = document.getElementById('workflows-status') as HTMLSpanElement;
 const textContainer = document.getElementById('text-container') as HTMLDivElement;
 const textInput = document.getElementById('text-input') as HTMLInputElement;
 const textAddBtn = document.getElementById('text-add-btn') as HTMLButtonElement;
@@ -37,6 +39,11 @@ let textState: {
 const updateDeployUI = (enabled: boolean) => {
   deployToggle.checked = enabled;
   deployLabel.textContent = enabled ? 'On' : 'Off';
+};
+
+const updateWorkflowsUI = (enabled: boolean) => {
+  workflowsToggle.checked = enabled;
+  workflowsLabel.textContent = enabled ? 'On' : 'Off';
 };
 
 const updateCommentsUI = () => {
@@ -346,6 +353,7 @@ chrome.storage.local.get(
     STORAGE_KEYS.textPatternsEnabled,
     STORAGE_KEYS.globalTextPatterns,
     STORAGE_KEYS.perPrTextPatterns,
+    STORAGE_KEYS.workflowsPanelEnabled,
   ],
   (result: Record<string, unknown>) => {
     logger.debug('popup storage read', result);
@@ -366,6 +374,8 @@ chrome.storage.local.get(
         (result[STORAGE_KEYS.perPrTextPatterns] as Record<string, TextPattern[]>) ?? {},
     };
     updateTextUI();
+
+    updateWorkflowsUI((result[STORAGE_KEYS.workflowsPanelEnabled] as boolean) ?? false);
 
     getActiveTab((tab) => {
       logger.debug('popup active tab', { id: tab.id, url: tab.url });
@@ -407,6 +417,12 @@ textToggle.addEventListener('change', () => {
     logger.debug('popup toggle-text response', response);
     textState.enabled = response.enabled;
     updateTextUI();
+  });
+});
+
+workflowsToggle.addEventListener('change', () => {
+  chrome.runtime.sendMessage({ type: 'toggle-workflows' }, (response) => {
+    updateWorkflowsUI(response.enabled);
   });
 });
 
