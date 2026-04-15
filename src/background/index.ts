@@ -2,6 +2,7 @@ import type { MessageHandlerMap } from './types';
 import { handlers as cleanerHandlers, onInstall as cleanerOnInstall } from './cleaner';
 import { handlers as commentsHandlers, onInstall as commentsOnInstall } from './comments';
 import { handlers as textHandlers, onInstall as textOnInstall } from './text';
+import { handlers as workflowsHandlers, onInstall as workflowsOnInstall } from './workflows';
 import { logger, initLogger } from '../logger';
 import { PR_URL_RE } from '../constants';
 
@@ -11,6 +12,7 @@ const features: { handlers: MessageHandlerMap; onInstall?: () => void }[] = [
   { handlers: cleanerHandlers, onInstall: cleanerOnInstall },
   { handlers: commentsHandlers, onInstall: commentsOnInstall },
   { handlers: textHandlers, onInstall: textOnInstall },
+  { handlers: workflowsHandlers, onInstall: workflowsOnInstall },
 ];
 
 const allHandlers = Object.assign({}, ...features.map((f) => f.handlers)) as MessageHandlerMap;

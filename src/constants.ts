@@ -13,6 +13,7 @@ const STORAGE_KEYS = {
   textPatternsEnabled: 'textPatternsEnabled',
   globalTextPatterns: 'globalTextPatterns',
   perPrTextPatterns: 'perPrTextPatterns',
+  workflowsPanelEnabled: 'workflowsPanelEnabled',
   debugLogsEnabled: 'debugLogsEnabled',
 } as const;
 

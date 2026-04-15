@@ -13,6 +13,7 @@ import {
   resetComments,
 } from './comments';
 import { hideMatchingItems, showAllMatchedItems, getMatchedPatterns, resetText } from './text';
+import { renderWorkflowsPanel, resetWorkflows } from './workflows';
 import { updateChip, hideChip } from './chip';
 import { logger, initLogger } from '../logger';
 import { PR_CONVERSATION_PATH_RE, PR_PATH_RE, TIMELINE_ITEM_SELECTOR } from '../constants';
@@ -29,6 +30,7 @@ let perPrHiddenUsers: Record<string, string[]> = {};
 let textPatternsEnabled = false;
 let globalTextPatterns: TextPattern[] = [];
 let perPrTextPatterns: Record<string, TextPattern[]> = {};
+let workflowsEnabled = false;
 
 const isPRConversationPage = () => PR_CONVERSATION_PATH_RE.test(location.pathname);
 
@@ -89,10 +91,16 @@ const runText = () => {
   hideMatchingItems(getEffectiveTextPatterns());
 };
 
+const runWorkflows = () => {
+  if (workflowsEnabled) renderWorkflowsPanel();
+  else resetWorkflows();
+};
+
 const run = () => {
   runDeploy();
   runComments();
   runText();
+  runWorkflows();
   refreshChip();
 };
 
@@ -117,7 +125,20 @@ const observeTimeline = () => {
           break;
         }
 
-        if (el.querySelector?.('.TimelineItem, button.ajax-pagination-btn')) {
+        if (
+          el.querySelector?.(
+            '.TimelineItem, button.ajax-pagination-btn, [class*="ExpandedChecks-module__checksContainer"], [data-testid="mergebox-border-container"]',
+          )
+        ) {
+          shouldRun = true;
+          break;
+        }
+
+        if (
+          el.matches?.(
+            '[class*="ExpandedChecks-module__checksContainer"], [class*="ListItem-module__listItem"]',
+          )
+        ) {
           shouldRun = true;
           break;
         }
@@ -135,6 +156,7 @@ const reset = () => {
   resetDeploy();
   resetComments();
   resetText();
+  resetWorkflows();
   if (timelineObserver) {
     timelineObserver.disconnect();
     timelineObserver = null;
@@ -205,6 +227,12 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
     refreshChip();
     return;
   }
+
+  if (message.type === 'workflows-updated') {
+    workflowsEnabled = message.enabled;
+    runWorkflows();
+    return;
+  }
 });
 
 logger.info('content script loaded', { url: location.href, isPR: isPRConversationPage() });
@@ -242,6 +270,15 @@ chrome.runtime.sendMessage({ type: 'get-text-state' }, (response) => {
     runText();
   }
   refreshChip();
+});
+
+chrome.runtime.sendMessage({ type: 'get-workflows-state' }, (response) => {
+  logger.debug('content get-workflows-state response', response);
+  workflowsEnabled = response.enabled;
+
+  if (workflowsEnabled && isPRConversationPage()) {
+    runWorkflows();
+  }
 });
 
 if (isPRConversationPage()) {
