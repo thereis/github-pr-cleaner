@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.0](https://github.com/thereis/github-pr-cleaner/compare/v1.3.0...v1.4.0) (2026-04-15)
+
+
+### Features
+
+* add workflows panel above PR comment composer ([4fc2eb9](https://github.com/thereis/github-pr-cleaner/commit/4fc2eb98dfb67003551454f64eca6b7be33fda26))
+
 ## [1.3.0](https://github.com/thereis/github-pr-cleaner/compare/v1.2.0...v1.3.0) (2026-04-13)
 
 
