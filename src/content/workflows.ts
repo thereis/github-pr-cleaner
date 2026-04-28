@@ -10,11 +10,6 @@ type WorkflowRun = {
   url: string;
 };
 
-const extractWorkflowName = (text: string): string => {
-  const beforeSlash = text.split(' / ')[0];
-  return beforeSlash.replace(/\s*\([^)]*\)\s*$/, '').trim();
-};
-
 type RunGroup = {
   runId: string;
   href: string;
@@ -38,7 +33,7 @@ const collectRuns = (): WorkflowRun[] => {
       const runId = match[1];
       const rawText = (a.textContent ?? '').trim();
       const hasSlash = rawText.includes(' / ');
-      const name = extractWorkflowName(rawText) || rawText;
+      const name = hasSlash ? rawText.split(' / ')[0].trim() : rawText;
       if (!name) return;
 
       const existing = byRunId.get(runId);
@@ -108,12 +103,49 @@ const buildPanel = (runs: WorkflowRun[]): HTMLElement => {
       whiteSpace: 'nowrap',
     });
 
-    const button = document.createElement('a');
-    button.href = run.url;
-    button.target = '_blank';
-    button.rel = 'noopener noreferrer';
-    button.textContent = 'View summary';
-    Object.assign(button.style, {
+    const actions = document.createElement('div');
+    Object.assign(actions.style, {
+      display: 'flex',
+      alignItems: 'center',
+      gap: '8px',
+      flexShrink: '0',
+    });
+
+    const runIdEl = document.createElement('span');
+    runIdEl.textContent = run.runId;
+    Object.assign(runIdEl.style, {
+      fontSize: '12px',
+      color: '#6e7681',
+      fontFamily: 'ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace',
+    });
+
+    const copyBtn = document.createElement('button');
+    copyBtn.textContent = 'Copy ID';
+    copyBtn.title = `Copy run ID ${run.runId}`;
+    Object.assign(copyBtn.style, {
+      padding: '4px 10px',
+      borderRadius: '6px',
+      border: '1px solid #30363d',
+      background: '#21262d',
+      color: '#c9d1d9',
+      fontSize: '12px',
+      fontWeight: '500',
+      cursor: 'pointer',
+    });
+    copyBtn.addEventListener('click', () => {
+      navigator.clipboard.writeText(run.runId);
+      copyBtn.textContent = 'Copied!';
+      setTimeout(() => {
+        copyBtn.textContent = 'Copy ID';
+      }, 1500);
+    });
+
+    const viewBtn = document.createElement('a');
+    viewBtn.href = run.url;
+    viewBtn.target = '_blank';
+    viewBtn.rel = 'noopener noreferrer';
+    viewBtn.textContent = 'View summary';
+    Object.assign(viewBtn.style, {
       display: 'inline-block',
       padding: '4px 10px',
       borderRadius: '6px',
@@ -123,11 +155,14 @@ const buildPanel = (runs: WorkflowRun[]): HTMLElement => {
       textDecoration: 'none',
       fontSize: '12px',
       fontWeight: '500',
-      flexShrink: '0',
     });
 
+    actions.appendChild(runIdEl);
+    actions.appendChild(copyBtn);
+    actions.appendChild(viewBtn);
+
     row.appendChild(nameEl);
-    row.appendChild(button);
+    row.appendChild(actions);
     list.appendChild(row);
   });
 
