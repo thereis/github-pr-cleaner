@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.5.0](https://github.com/thereis/github-pr-cleaner/compare/v1.4.0...v1.5.0) (2026-04-28)
+
+
+### Features
+
+* add run ID display and copy button to workflows panel ([70a9699](https://github.com/thereis/github-pr-cleaner/commit/70a96993688b685b38f0fe391294d2e8e3314ea3))
+
 ## [1.4.0](https://github.com/thereis/github-pr-cleaner/compare/v1.3.0...v1.4.0) (2026-04-15)
 
 
